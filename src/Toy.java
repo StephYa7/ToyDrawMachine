@@ -37,4 +37,14 @@ public class Toy {
     public void addMoreToys(int count){
         this.setCount(this.getCount()+count);
     }
+
+    @Override
+    public String toString() {
+        return "Toy{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", count=" + count +
+                ", winWeight=" + winWeight +
+                '}';
+    }
 }
