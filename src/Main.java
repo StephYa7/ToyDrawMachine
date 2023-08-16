@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Main {
@@ -13,7 +14,7 @@ public class Main {
     public static File file = new File("src/listOfGivenToys.txt");
 
     public static void main(String[] args) {
-        Toy a = new Toy(01, "aa", 5, 1);
+        Toy a = new Toy(01, "aa", 5, 12);
         Toy b = new Toy(02, "bb", 5, 5);
         Toy c = new Toy(03, "cc", 5, 3.5);
         Toy d = new Toy(04, "dd", 5, 7);
@@ -25,7 +26,7 @@ public class Main {
         toys.add(d);
         toys.add(e);
         toys.add(f);
-
+        printChance();
         chooseWinningToy();
         chooseWinningToy();
         chooseWinningToy();
@@ -33,9 +34,6 @@ public class Main {
         getPrizeFromQueue();
         getPrizeFromQueue();
         getPrizeFromQueue();
-        System.out.println(toys);
-        System.out.println(winningToysWaiting);
-
     }
 
 
@@ -62,10 +60,11 @@ public class Main {
 
     public static void getPrizeFromQueue() {
         LocalDateTime ldt = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-YY в HH:mm:ss");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             if (winningToysWaiting.size() > 0) {
                 Toy buf = winningToysWaiting.poll();
-                writer.write(String.format("Игрушка %s была выдана %s\r", buf.getName(), ldt));
+                writer.write(String.format("Игрушка %s была выдана %s\r", buf.getName(), ldt.format(formatter)));
             } else System.out.println("No toys waiting to be given out!");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -74,7 +73,16 @@ public class Main {
 
     public static void printChance() {
         int countToys = 0;
-        int totalWeight = 0;
-        int totalChance = 0;
+        double x = 0;
+        double totalWeight = 0;
+        for (Toy toy : toys) {
+            countToys += toy.getCount();
+            totalWeight += toy.getWinWeight() * toy.getCount();
+        }
+        for (Toy toy : toys) {
+            System.out.printf("Шанс выпадения игрушки %s равен %,.1f%s  \n",
+                    toy.getName(), (((toy.getWinWeight() * toy.getCount()) / totalWeight)*100),"%.");
+            x +=(toy.getWinWeight() * toy.getCount()) / totalWeight;
+        }
     }
 }
